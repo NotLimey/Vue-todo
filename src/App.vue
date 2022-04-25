@@ -10,16 +10,41 @@ export default {
     return {
       todos: [],
       todo: "",
+      editTodo: "",
+      editTodoIdx: ""
     }
   },
   methods: {
     removeTodo(index) {
       this.todos.splice(index, 1)
+      this.updateTodos();
     },
     addTodo() {
+      if(this.todo.length < 1) return;
       this.todos.push(this.todo);
       this.todo = "";
+      this.updateTodos();
+    },
+    updateTodos() {
+      console.log("updateTodos");
+      window.localStorage.setItem("todos", JSON.stringify(this.todos));
+    },
+    toggleEditTodoFunction(index) {
+      this.editTodo = this.todos[index];
+      this.editTodoIdx = index;
+      const id = "todo_" + index;
+      console.log(this.$refs.todos);
+    },
+    keyDown(e) {
+      if(e.key === "Enter") {
+        this.addTodo();
+      }
     }
+  },
+  mounted() {
+    const todos = window.localStorage.getItem("todos");
+    if(!todos) return;
+    this.todos = JSON.parse(todos);
   }
 }
 </script>
@@ -40,6 +65,7 @@ export default {
         placeholder="Todo.."
         :value="todo"
         @input="event => todo = event.target.value"
+        @keydown="keyDown"
       />
     </div>
     <div class="flex items-center">
@@ -53,9 +79,10 @@ export default {
     </div>
     </div>
     <div class="max-w-sm w-full mx-5 mt-4">
-      <div v-for="(todo, index) in todos" :key="todo" class="w-full bg-red-500 rounded-sm py-2 px-4 mb-4 flex justify-between">
-        <h2>{{todo}}</h2>
-        <TrashIcon class="h-6 w-6 cursor-pointer" @click="removeTodo(index)" />
+      <div v-for="(todo, index) in todos" :key="todo" :id="`todo_` + index" class="w-full bg-green-500 rounded-sm py-2 px-4 mb-4 flex justify-between" @dblclick="toggleEditTodoFunction(index)" ref="todos">
+        <h2 v-if="index !== editTodoIdx" class="text-sm uppercase font-semibold text-black">{{todo}}</h2>
+        <input v-if="index === editTodoIdx" :value="editTodo" type="text" class="bg-transparent border-none p-1 remove-outline-input text-sm uppercase font-semibold text-black">
+        <TrashIcon class="h-6 w-6 cursor-pointer text-black" @click="removeTodo(index)" />
       </div>
     </div>
   </div>
