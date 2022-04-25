@@ -1,11 +1,14 @@
 <script>
-import { TrashIcon, PlusSmIcon } from '@heroicons/vue/solid'
+import { TrashIcon, PlusSmIcon } from '@heroicons/vue/solid';
+import TodoComponent from './components/TodoComponent.vue'
 
 export default {
   name: 'App',
   components: { 
     PlusSmIcon,
-    TrashIcon },
+    TrashIcon ,
+    TodoComponent
+  },
   data() {
     return {
       todos: [],
@@ -32,8 +35,11 @@ export default {
     toggleEditTodoFunction(index) {
       this.editTodo = this.todos[index];
       this.editTodoIdx = index;
-      const id = "todo_" + index;
       console.log(this.$refs.todos);
+    },
+    updateTodo(index, e) {
+      this.todos[index] = e.target.value; 
+      this.updateTodos()
     },
     keyDown(e) {
       if(e.key === "Enter") {
@@ -79,11 +85,15 @@ export default {
     </div>
     </div>
     <div class="max-w-sm w-full mx-5 mt-4">
-      <div v-for="(todo, index) in todos" :key="todo" :id="`todo_` + index" class="w-full bg-green-500 rounded-sm py-2 px-4 mb-4 flex justify-between" @dblclick="toggleEditTodoFunction(index)" ref="todos">
-        <h2 v-if="index !== editTodoIdx" class="text-sm uppercase font-semibold text-black">{{todo}}</h2>
-        <input v-if="index === editTodoIdx" :value="editTodo" type="text" class="bg-transparent border-none p-1 remove-outline-input text-sm uppercase font-semibold text-black">
-        <TrashIcon class="h-6 w-6 cursor-pointer text-black" @click="removeTodo(index)" />
-      </div>
+      <todo-component 
+        v-for="(todo, index) in todos" 
+        :key="todo" 
+        :todo="todo" 
+        :index="index"
+        @update="(e => updateTodo(index, e))"
+        @remove="removeTodo(index)"
+        @edit-todo="toggleEditTodoFunction(index)"
+      />
     </div>
   </div>
 </template>
