@@ -29,22 +29,27 @@ export default {
       this.updateTodos();
     },
     updateTodos() {
-      console.log("updateTodos");
       window.localStorage.setItem("todos", JSON.stringify(this.todos));
     },
     toggleEditTodoFunction(index) {
       this.editTodo = this.todos[index];
       this.editTodoIdx = index;
-      console.log(this.$refs.todos);
     },
-    updateTodo(index, e) {
-      this.todos[index] = e.target.value; 
-      this.updateTodos()
+    handleUpdate(index, e) {
+      this.editTodoIdx = index;
+      this.editTodo = e.target.value;
     },
     keyDown(e) {
       if(e.key === "Enter") {
         this.addTodo();
       }
+    },
+    updateTodo(key) {
+      if(key !== "Enter") return;
+      this.todos[this.editTodoIdx] = this.editTodo;
+      this.editTodo = "";
+      this.editTodoIdx = "";
+      this.updateTodos();
     }
   },
   mounted() {
@@ -56,7 +61,8 @@ export default {
 </script>
 
 <template>
-  <div class="flex flex-col items-center m-10">
+  <div class="min-h-screen flex flex-col justify-between py-8 px-5">
+    <div class="flex flex-col items-center">
     <h1 class="text-3xl">Todos</h1>
     <div class="flex gap-2 my-4">
       <div>
@@ -90,11 +96,16 @@ export default {
         :key="todo" 
         :todo="todo" 
         :index="index"
-        @update-text="(e) => {console.log(e)}"
+        @update-text="(e) => handleUpdate(index, e)"
         @remove="removeTodo(index)"
         @edit-todo="toggleEditTodoFunction(index)"
+        @keydown="e => updateTodo(e.key)"
       />
     </div>
+  </div>
+  <div class="flex justify-center">
+    <p>Made with <span class="text-red-500">love</span> by <a class="text-green-500" href="https://github.com/notlimey" target="_blank" rel="noreferrer">Limey</a></p>
+  </div>
   </div>
 </template>
 
