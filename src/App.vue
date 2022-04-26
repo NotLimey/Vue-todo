@@ -90,7 +90,7 @@ export default {
         :key="todo" 
         :todo="todo" 
         :index="index"
-        @update="(e => updateTodo(index, e))"
+        @update-text="(e) => {console.log(e)}"
         @remove="removeTodo(index)"
         @edit-todo="toggleEditTodoFunction(index)"
       />
